@@ -71,6 +71,10 @@ class pdfsigner:
             )
 
             output_pdf = "signed_pdf/" + output_pdf
+            try:
+                os.mkdir("signed_pdf")
+            except:
+                pass
             with open(output_pdf, 'wb') as outf:
                 pdf_signer.sign_pdf(w, output=outf)
 

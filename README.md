@@ -1,131 +1,171 @@
-# PDF Auto Signer
+<div align="center">
 
-A simple Python utility for automatically stamping a signature image onto PDF files.
+# 📝 PDF Auto Signer
 
-This project uses a small Tkinter GUI to trigger batch signing of PDFs stored in the `pdfs/` folder.
+**Automatically sign all your PDFs with a single click — powered by Python & pyhanko**
 
----
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=white)
+![PyMuPDF](https://img.shields.io/badge/PyMuPDF-latest-green?style=for-the-badge)
+![pyhanko](https://img.shields.io/badge/pyhanko-latest-orange?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Windows-lightblue?style=for-the-badge&logo=windows)
 
-## Features
-
-- Graphical launcher with basic actions
-- Automatically signs all `.pdf` files inside the `pdfs/` directory
-- Uses a configured image signature file and fixed position/size
-- Saves signed PDFs with the same output filename
-
----
-
-## Project structure
-
-- `pdfsign.py` — main application script
-- `pdfs/` — folder where source PDF files are stored
-- `sign.jpeg` — default signature image used by the current configuration
-- `sign1.pdf` — example or test PDF file
-- `update_exe.py` — packaging helper script for building a standalone executable
-- `update_exe.spec` — PyInstaller spec file generated during packaging
-- `build/` — PyInstaller build artifacts
-- `dist/` — generated standalone executable output
+</div>
 
 ---
 
-## Requirements
+## ✨ Features
 
-- Python 3.8+
-- `PyMuPDF` (`fitz`)
-- `pyhanko` (PDF signing helper library)
-- `cryptography` (backend used by `pyhanko` for PKCS#12/key handling)
-- `tkinter` (usually included with standard Python installations on Windows)
-- `pyinstaller` (optional, only if building an executable)
+- 🖱️ **Simple GUI** — Clean Tkinter window, no command line needed
+- 📂 **Batch Signing** — Signs every PDF inside the `pdfs/` folder automatically
+- 🔏 **Cryptographic Signature** — Uses a real PKCS#12 (.pfx) certificate via `pyhanko`
+- 🖼️ **Image Stamp** — Overlays your signature image at a configurable position
+- 📦 **Standalone EXE** — Can be packaged into a single `.exe` with PyInstaller
+- 🔑 **Certificate Generator** — Includes `generate_id.py` to create your own `.pfx` file
 
-Install required packages:
+---
+
+## 📁 Project Structure
+
+```
+PdfSigner/
+│
+├── pdfs/                  # 👉 Drop your PDFs here to be signed
+├── signed_pdf/            # 👉 Signed outputs appear here
+│
+├── pdfsign.py             # Main application
+├── pdfsign.bat            # One-click launcher (installs deps + runs app)
+├── generate_id.py         # Certificate (.pfx) generator
+├── generate_id.bat        # One-click certificate generator
+├── update_exe.py          # Builds standalone .exe via PyInstaller
+│
+├── MyIdentity.pfx         # Your signing certificate (do NOT share this)
+├── sign.jpeg              # Your signature image
+├── requirements.txt       # Python dependencies
+└── README.md
+```
+
+---
+
+## ⚙️ Configuration
+
+Open `pdfsign.py` and edit the `CONFIG` section at the top:
+
+```python
+signature_image = "sign.jpeg"      # Your signature image file
+pfx_file_name   = "MyIdentity.pfx" # Your certificate file
+pfx_password    = "root1234"       # Your certificate password
+page_num        = -1               # Page to sign (-1 = last page)
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install dependencies
 
 ```bash
-pip install pymupdf pyhanko cryptography pyinstaller
+pip install -r requirements.txt
 ```
 
----
+Or just double-click **`pdfsign.bat`** — it installs everything and launches the app.
 
-## Setup
+### 2. Generate your signing certificate
 
-1. Place the PDF files you want to sign inside the `pdfs/` directory.
-2. Make sure the signature image is available and referenced by `signature_image` in `pdfsign.py`.
-3. Optionally adjust these configuration values inside `pdfsign.py`:
+If you don't have a `.pfx` file yet, run:
 
-```python
-github_repo = ""
-signature_image = "sign.jpeg"
-X_POS = 100
-Y_POS = 50
-WIDTH = 200
-HEIGHT = 80
-page_num = -1
+```bash
+python generate_id.py
 ```
 
-### Certificate (PFX) setup
+or double-click **`generate_id.bat`**. It will ask you:
 
-The script expects a PKCS#12 file (PFX) named `my_identity.pfx` by default and a passphrase configured in `pdfsign.py`:
-
-```python
-pfx_file_name = "my_identity.pfx"
-pfx_password = "root1234"
+```
+Enter pfx file name (e.g. MyIdentity): MyIdentity
+Enter password for the pfx file: ****
+Enter country name (2-letter code, e.g. IN): IN
+Enter organization name: My Company
+Type your signature here: John Doe
+Enter a name for the certificate: My Signing Cert
 ```
 
-Place your `.pfx` file in the project root or update `pfx_file_name` to the correct path. The code encodes the passphrase automatically before calling `pyhanko`, so keep the passphrase as a normal string in the script.
+This generates `MyIdentity.pfx` in the project folder.
 
-- `X_POS`, `Y_POS` — signature position on the page
-- `WIDTH`, `HEIGHT` — signature image dimensions
-- `page_num` — target page index (`-1` = last page)
+### 3. Add your PDFs
 
----
+Drop all the PDF files you want signed into the **`pdfs/`** folder.
 
-## Usage
-
-Run the application from the project root:
+### 4. Run the app
 
 ```bash
 python pdfsign.py
 ```
 
-A window will appear with buttons:
+---
 
-- **Start Sign** — signs every PDF found in the `pdfs/` folder
-- **How to Use?** — placeholder for usage instructions
-- **Update Software** — placeholder for future update logic
+## 🖥️ GUI Overview
 
-### Packaging as an executable
+| Button | Action |
+|---|---|
+| **Start Sign** | Signs all PDFs in `pdfs/` and saves to `signed_pdf/` |
+| **How to Use?** | Opens this README on GitHub |
+| **Update Software** | Pulls the latest version from GitHub |
 
-To build a standalone executable using PyInstaller, run:
+---
+
+## 📦 Build as Standalone EXE
+
+To package the app into a single `.exe`:
 
 ```bash
 python update_exe.py
 ```
 
-The generated executable and supporting files will appear in the `dist/` and `build/` folders.
+The output will be in the `dist/` folder. Share that `.exe` and it runs without Python installed.
 
 ---
 
-## How it works
+## 🔐 Security Notes
 
-When you click **Start Sign**, the app:
+> ⚠️ **Never share or commit your `.pfx` file to GitHub.**
+> It contains your private key. Add it to `.gitignore`:
 
-1. scans `pdfs/` for PDF files
-2. opens each PDF using `fitz`
-3. inserts the signature image at the configured position
-4. saves the output PDF using the same filename
-
----
-
-## Notes
-
-- `How to Use?` and `Update Software` are currently stubs and not fully implemented.
-- The current script overwrites PDFs in place when signing.
-- For production use, consider adding error handling, a preview screen, and separate output filenames.
+```
+*.pfx
+signed_pdf/
+pdfs/
+```
 
 ---
 
-## Future improvements
+## 🛠️ Requirements
 
-- Add an actual help screen inside the GUI
-- Add a file picker for the signature image
-- Add output filename control and backup handling
-- Add support for multiple pages or custom page selection
+| Package | Purpose |
+|---|---|
+| `PyMuPDF` | PDF rendering and image stamping |
+| `pyhanko` | Cryptographic PDF signing |
+| `cryptography` | PKCS#12 / certificate handling |
+| `tkinter` | GUI (bundled with Python on Windows) |
+| `pyinstaller` | Building standalone executables |
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] File picker for signature image inside the GUI
+- [ ] Preview before signing
+- [ ] Custom output filename support
+- [ ] Multi-page signing support
+- [ ] Dark/light theme toggle
+
+---
+
+## 👨‍💻 Author
+
+**SamJoel2007** — [GitHub](https://github.com/SamJoel2007)
+
+---
+
+<div align="center">
+  Made with ❤️ and Python
+</div>
