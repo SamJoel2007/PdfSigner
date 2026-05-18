@@ -1,6 +1,7 @@
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 from pyhanko.sign import signers, fields
-from pyhanko.stamp import TextStampStyle 
+from pyhanko.stamp import TextStampStyle
+from pyhanko.pdf_utils.font import SimpleFontEngine
 import tkinter as tk
 import subprocess
 import fitz
@@ -62,7 +63,7 @@ class pdfsigner:
         )
 
             custom_stamp = TextStampStyle( 
-            stamp_text="Signed by: %(signer)s\nDate: %(ts)s"
+            stamp_text="%(signer)s\nSigned by: %(signer)s\nDate: %(ts)s"
             )
 
             pdf_signer = signers.PdfSigner(
@@ -99,6 +100,7 @@ class pdfsigner:
             pdf_files = re.findall(r'\S+\.pdf', str(pdf_files.stdout))
             for pdf in pdf_files:
                 pdfsigner.attach_signature(pdf, signature_image, pdf)
+            pdfsigner.message("All files signed successfully!")
         elif op == "update":
             pdfsigner.update_software()
         elif op == "howto":
